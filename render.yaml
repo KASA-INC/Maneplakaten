@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: maneplakat
+    runtime: python
+    plan: standard            # 70x100 @300dpi trenger romslig RAM; 'starter' kan bli for lite
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: SHOPIFY_WEBHOOK_SECRET
+        sync: false
+      - key: GELATO_API_KEY
+        sync: false
+      - key: GELATO_SHIPMENT_METHOD
+        value: normal
+      - key: RENDER_DPI
+        value: "300"
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_REGION
+        value: auto
+      - key: S3_ENDPOINT
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: DRY_RUN
+        value: "1"            # start trygt: bygg payload, ikke send. Sett "0" nar alt funker.
