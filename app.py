@@ -45,7 +45,6 @@ PRODUCT_UIDS = {
     "A4":     "flat_a4-8x12-inch_170-gsm-65lb-uncoated_4-0_ver",
     "30x40":  "flat_300x400-mm-12x16-inch_170-gsm-65lb-uncoated_4-0_ver",
     "50x70":  "flat_500x700-mm-20x28-inch_170-gsm-65lb-uncoated_4-0_ver",
-    "70x100": "flat_700x1000-mm-28x40-inch_170-gsm-65lb-uncoated_4-0_ver",
 }
 
 app = FastAPI()
@@ -68,7 +67,7 @@ def normalize_format(s: str):
         return None
     k = s.lower().replace("×", "x").replace("cm", "").replace(" ", "").strip()
     if k in ("a4",): return "A4"
-    for fmt in ("30x40", "50x70", "70x100"):
+    for fmt in ("30x40", "50x70"):
         if fmt in k:
             return fmt
     return None
