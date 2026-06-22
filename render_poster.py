@@ -9,7 +9,7 @@ import numpy as np
 import ephem
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageChops
 
-FONT_FILE = "/mnt/user-data/uploads/Afacad-VariableFont_wght.ttf"
+FONT_FILE = "Afacad-VariableFont_wght.ttf"
 # Hoyopplost manetekstur (kremtonet naerside-skive). Lag den med prep_moon.py.
 # For produksjon: bruk NASA SVS CGI Moon Kit (public domain) som kilde.
 try:
