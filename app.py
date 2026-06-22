@@ -96,11 +96,12 @@ def build_gelato_items(order) -> list:
         pr = props_to_dict(li)
         date = pr.get("dato") or pr.get("date")
         place = pr.get("sted") or pr.get("place") or ""
+        text = pr.get("tekst") or pr.get("text") or ""
         fmt = normalize_format(pr.get("format") or li.get("variant_title") or li.get("title"))
         if not (date and fmt and fmt in PRODUCT_UIDS):
             continue                          # ikke en maneplakat-linje -> hopp over
         flip = -1 if southern(place) else 1
-        png, info = render_poster.render_bytes(date, place, fmt, DPI, flip)
+        png, info = render_poster.render_bytes(date, place, fmt, DPI, flip, text)
         key = f"moonposters/{order['id']}/{li['id']}.png"
         url = upload_png(png, key)
         log.info("Rendret %s %s %s (%s%%) -> %s", fmt, date, place, info["pct"], url)
