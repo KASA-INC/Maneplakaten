@@ -45,6 +45,7 @@ PRODUCT_UIDS = {
     "A4":     "flat_a4-8x12-inch_170-gsm-65lb-uncoated_4-0_ver",
     "30x40":  "flat_300x400-mm-12x16-inch_170-gsm-65lb-uncoated_4-0_ver",
     "50x70":  "flat_500x700-mm-20x28-inch_170-gsm-65lb-uncoated_4-0_ver",
+    "70x100": "flat_700x1000-mm-28x40-inch_170-gsm-65lb-uncoated_4-0_ver",
 }
 
 app = FastAPI()
@@ -67,7 +68,7 @@ def normalize_format(s: str):
         return None
     k = s.lower().replace("×", "x").replace("cm", "").replace(" ", "").strip()
     if k in ("a4",): return "A4"
-    for fmt in ("30x40", "50x70"):
+    for fmt in ("30x40", "50x70", "70x100"):
         if fmt in k:
             return fmt
     return None
@@ -99,11 +100,17 @@ def build_gelato_items(order) -> list:
         fmt = normalize_format(pr.get("format") or li.get("variant_title") or li.get("title"))
         if not (date and fmt and fmt in PRODUCT_UIDS):
             continue                          # ikke en maneplakat-linje -> hopp over
-        flip = -1 if southern(place) else 1
-        png, info = render_poster.render_bytes(date, place, fmt, DPI, flip, text)
+        lat_raw = pr.get("_lat") or pr.get("lat")
+        try:
+            lat = float(lat_raw) if lat_raw not in (None, "") else None
+        except ValueError:
+            lat = None
+        flip = -1 if southern(place) else 1   # reserve hvis breddegrad mangler i ordren
+        png, info = render_poster.render_bytes(date, place, fmt, DPI, flip, text, lat)
         key = f"moonposters/{order['id']}/{li['id']}.png"
         url = upload_png(png, key)
-        log.info("Rendret %s %s %s (%s%%) -> %s", fmt, date, place, info["pct"], url)
+        log.info("Rendret %s %s %s (%s%%, dreid %s\u00b0) -> %s",
+                 fmt, date, place, info["pct"], info["rot"], url)
         items.append({
             "itemReferenceId": str(li["id"]),
             "productUid": PRODUCT_UIDS[fmt],
